@@ -80,50 +80,10 @@ app.Container = Backbone.Model.extend({
     this.set('data', JSON.stringify(o));
     this.trigger('sync');
   },
-  // Y-Axis getter
   getY: function() {
     return this.get('temperature');
-  }
-});
-
-app.Container2 = Backbone.Model.extend({
-  url: function() {
-    return '/';
   },
-  wsUrl: function() {
-    return 'ws://wot.city/object/' + this.attributes.name + '/viewer';
-  },
-  defaults: {
-    name: 'test',
-    data: '',
-    cid: 0,
-    temp: 0
-  },
-  // AutomationJS plugins
-  parseJSON: function() {
-    // remove internal properties from model
-    var objCopy = function(object) {
-      var o = {};
-      for (var p in object) {
-        if (object.hasOwnProperty(p)) {
-          // AutomationJS:
-          // don't copy internal properties
-          if (p === 'name' || p === 'data' || p === 'cid') {
-              continue;
-          }
-          o[p] = object[p];
-        }
-      }
-      return o;
-    };
-
-    var o = objCopy(this.attributes);
-
-    this.set('data', JSON.stringify(o));
-    this.trigger('sync');
-  },
-  // Y-Axis getter
-  getY: function() {
+  getY2: function() {
     return this.get('temp');
   }
 });
@@ -241,7 +201,7 @@ app.ContainerView2 = Backbone.View.extend({
   el: '#gauge2',
   template: _.template( $('#tmpl-gauge2').html() ),
   initialize: function() {
-    this.component2 = new Automation({
+    this.component = new Automation({
       el: this.$el,
       model: app.Container,
       template: this.template
@@ -315,7 +275,7 @@ app.ContainerView2 = Backbone.View.extend({
     this.config5.displayPercent = false;
   },
   render: function(name) {
-    this.model = this.component2.add({
+    this.model = this.component.add({
         name: name
     });
     this.listenTo(this.model, 'sync', this.update);
@@ -324,7 +284,7 @@ app.ContainerView2 = Backbone.View.extend({
     this.render(name);
   },
   update: function() {
-    var y = this.model.getY();
+    var y = this.model.getY2();
 
     this.$el.find('#fillgauge2').empty();
 
